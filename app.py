@@ -6,7 +6,7 @@ import tempfile
 
 behave_like = "You are a medical and healthcare expert that specializes in medicines and disease diagnostic."
 MODEL = "gpt-3.5-turbo"
-openai.api_key = "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"
+openai.api_key = <API-KEY>
 
 
 st.markdown("<h1 style='text-align: center; color: blue;'>Healthcare Pro</h1>", unsafe_allow_html=True)
