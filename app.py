@@ -9,7 +9,7 @@ MODEL = "gpt-3.5-turbo"
 openai.api_key = <API-KEY>
 
 
-st.markdown("<h1 style='text-align: center; color: blue;'>Healthcare Pro</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: cream;'> >> Healthcare Pro << </h1> <br> <h3 style='text-align:center;color:cream;'> >> By Team Tru << </h3>", unsafe_allow_html=True)
 
 def text_to_speech(text):
     tts = gTTS(text=text, lang='en')
@@ -19,28 +19,56 @@ def text_to_speech(text):
         audio = BytesIO(f.read())
     return audio
 
-def CustomChatGPT(user_input):
-    response = openai.ChatCompletion.create(
+def CustomChatGPT(user_input,days_since_feeling):
+    input_values = [user_input+"Feeling since " + str(days_since_feeling) + "What is the possible disease ? [A few possible names only]" ,
+                    user_input+"Feeling since " + str(days_since_feeling) + "What are some possible instant medications ? [A few medications list only] ",
+                   user_input+"Feeling since " + str(days_since_feeling) + "What are some other symptoms ? 6 possible symptoms"]
+    response_disease = openai.ChatCompletion.create(
         model=MODEL,
         messages=[
             {"role": "system", "content": behave_like},
-            {"role": "user", "content": user_input},
-        ],
-        temperature=0,
-    )
-    disease = response['choices'][0]['message']['content']
-    return disease
+            {"role": "user", "content": input_values[0]},
+            ],
+            temperature=0.5,
+            max_tokens = 50
+        )
+    
+    response_medic = openai.ChatCompletion.create(
+        model=MODEL,
+        messages=[
+            {"role": "system", "content": behave_like},
+            {"role": "user", "content": input_values[1]},
+            ],
+            temperature=0.5,
+            max_tokens = 150
+        )
+    response_symp = openai.ChatCompletion.create(
+        model=MODEL,
+        messages=[
+            {"role": "system", "content": behave_like},
+            {"role": "user", "content": input_values[2]},
+            ],
+            temperature=0.5,
+            max_tokens = 50
+        )
+    disease = response_disease['choices'][0]['message']['content']
+    medics = response_medic['choices'][0]['message']['content']
+    symps = response_symp['choices'][0]['message']['content']
+    return disease,medics,symps
 
 def main():
-    user_input = st.text_input("Enter your message")
+    user_input = st.text_input("Enter your condition")
+    days_since_feeling = st.slider("How many days since you are feeling ?",0,10,1)
     if st.button("Submit"):
-        disease = CustomChatGPT(user_input)
-        st.write("Response:", disease)
+        disease,medics,symps = CustomChatGPT(user_input,days_since_feeling)
+        st.write("Possible Disease: ", disease)
+        st.write("Possible Medications: ",medics)
+        st.write("Other symptoms: ",symps)
         audio = text_to_speech(disease)
         st.audio(audio.read(), format='audio/mp3', start_time=0)
         
-    gif_url = "doc.jpg"  # Replace with your GIF URL
-    st.image(gif_url, use_column_width=True)
+    gif_url = "doc.jpeg"  # Replace with your GIF URL
+    st.image(gif_url, width=300)
 
 
 if __name__ == "__main__":
