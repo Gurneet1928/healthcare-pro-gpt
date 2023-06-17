@@ -6,7 +6,7 @@ import tempfile
 
 behave_like = "You are a medical and healthcare expert that specializes in medicines and disease diagnostic."
 MODEL = "gpt-3.5-turbo"
-openai.api_key = <API-KEY>
+openai.api_key = "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"
 
 
 st.markdown("<h1 style='text-align: center; color: cream;'> >> Healthcare Pro << </h1> <br> <h3 style='text-align:center;color:cream;'> >> By Team Tru << </h3>", unsafe_allow_html=True)
@@ -61,9 +61,12 @@ def main():
     days_since_feeling = st.slider("How many days since you are feeling ?",0,10,1)
     if st.button("Submit"):
         disease,medics,symps = CustomChatGPT(user_input,days_since_feeling)
-        st.write("Possible Disease: ", disease)
-        st.write("Possible Medications: ",medics)
-        st.write("Other symptoms: ",symps)
+        st.write("Possible Disease: ")
+        st.write(disease)
+        st.write("Possible Medications: ")
+        st.write(medics)
+        st.write("Other symptoms: ")
+        st.write(symps)
         audio = text_to_speech(disease)
         st.audio(audio.read(), format='audio/mp3', start_time=0)
         
